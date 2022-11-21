@@ -133,9 +133,6 @@ __attribute__((__always_inline__)) static inline int process_ipv6hdr(struct xdp_
 	l2_swap(&tmp_eth);
 	tmp_eth.h_proto = bpf_htons(ETH_P_IP);
 
-	__be32 src_ip = 0x12121414;
-	__be32 dst_ip = 0x12121212;
-
 	struct iphdr tmp_ipv4 = {
 		.version = 4,
 		.ihl = 5,
@@ -169,7 +166,6 @@ __attribute__((__always_inline__)) static inline int process_ipv6hdr(struct xdp_
 	return XDP_TX;
 }
 
-SEC("xdp")
 __attribute__((__always_inline__)) static inline int xdp_parse_l2(struct xdp_md *ctx) {
 	void *data = (void *)(long)ctx->data;
 	void *data_end = (void *)(long)ctx->data_end;
@@ -188,4 +184,8 @@ __attribute__((__always_inline__)) static inline int xdp_parse_l2(struct xdp_md 
 	return XDP_PASS;
 }
 
+SEC("xdp")
+__attribute__((__always_inline__)) static inline int nat64(struct xdp_md *ctx) {
+	return xdp_parse_l2(ctx);
+}
 char _license[] SEC("license") = "GPL";
